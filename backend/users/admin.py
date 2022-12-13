@@ -12,7 +12,6 @@ class UserAdmin(admin.ModelAdmin):
         'email',
         'first_name',
         'last_name',
-        # 'date_joined',
         )
     search_fields = (
         'email',
@@ -21,7 +20,6 @@ class UserAdmin(admin.ModelAdmin):
         'last_name'
         )
     list_filter = (
-        # 'date_joined',
         'email',
         'first_name'
         )

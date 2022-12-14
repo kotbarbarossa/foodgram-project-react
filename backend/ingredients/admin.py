@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Ingredient
 
 @admin.register(Ingredient)
-class TagAdmin(admin.ModelAdmin):
+class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
@@ -16,4 +16,4 @@ class TagAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit',
         )
-    empty_value_display = '-пусто-'
+    empty_value_display = '-empty-'

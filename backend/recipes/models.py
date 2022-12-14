@@ -11,13 +11,13 @@ class Recipe(models.Model):
         Ingredient,
         through='RecipeIngredient',
         verbose_name='ingredients',
-        related_name='recipes',
+        related_name='recipe',
 #        on_delete=models.PROTECT,
         null=True)
     tags = models.ManyToManyField(
         Tag,
         verbose_name='tags',
-        related_name='recipes',
+        related_name='recipe',
         null=True)
     image = models.ImageField(
         'recipe photo',
@@ -35,7 +35,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='recipes',
+        related_name='recipe',
         verbose_name='author')
     pub_date = models.DateTimeField(
         'creation date',
@@ -74,6 +74,49 @@ class RecipeIngredient(models.Model):
                 name='unique ingredient')]
 
 
+class FavoriteRecipe(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorite_recipe',
+        verbose_name='user',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorite_recipe',
+        verbose_name='recipe',
+    )
+    favorite_date = models.DateTimeField(
+        'favorite date',
+        auto_now_add=True)    
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'], name='unique_favorite')
+        ]
+
+    def __str__(self):
+        return f'{self.user} favorite {self.recipe}'
 
 
+class ShoppingCart(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='shopping_cart',
+        verbose_name='user')
+    recipe = models.ManyToManyField(
+        Recipe,
+        related_name='shopping_cart',
+        verbose_name='recipe')
 
+    class Meta:
+        verbose_name = 'purchase'
+        verbose_name_plural = 'purchases'
+        ordering = ['-id']
+
+    def __str__(self):
+        shopping_cart = [recipe['name'] for recipe in self.recipe.values('name')]
+        return f'{self.user} shopping cart: {shopping_cart}'

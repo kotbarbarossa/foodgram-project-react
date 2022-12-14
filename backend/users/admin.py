@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from .models import Subscribe
 
 User = get_user_model()
 
@@ -17,10 +18,23 @@ class UserAdmin(admin.ModelAdmin):
         'email',
         'username',
         'first_name',
-        'last_name'
+        'last_name',
         )
     list_filter = (
         'email',
-        'first_name'
+        'first_name',
         )
-    empty_value_display = '-пусто-'
+    empty_value_display = '-empty-'
+
+
+@admin.register(Subscribe)
+class SubscribeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'author',
+        'subscribe_date',
+        )
+    search_fields = (
+        'user__email', 'author__email',)
+    empty_value_display = '-empty-'

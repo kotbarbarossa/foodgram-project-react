@@ -19,4 +19,4 @@ class TagAdmin(admin.ModelAdmin):
         'color',
         'slug',
         )
-    empty_value_display = '-пусто-'
+    empty_value_display = '-empty-'

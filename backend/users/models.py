@@ -35,13 +35,13 @@ class Subscribe(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='subscribe',
+        related_name='subscribe_user',
         verbose_name='follower',
     )
-    following = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='subscribe',
+        related_name='subscribe_author',
         verbose_name='author',
     )
     subscribe_date = models.DateTimeField(
@@ -51,8 +51,8 @@ class Subscribe(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'following'], name='unique_follow')
+                fields=['user', 'author'], name='unique_follow')
         ]
 
     def __str__(self):
-        return f'{self.user} subscibed to {self.following}'
+        return f'{self.user} subscibed to {self.author}'

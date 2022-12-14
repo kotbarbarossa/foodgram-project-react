@@ -12,13 +12,11 @@ class Recipe(models.Model):
         through='RecipeIngredient',
         verbose_name='ingredients',
         related_name='recipe',
-#        on_delete=models.PROTECT,
-        null=True)
+#        on_delete=models.PROTECT,)
     tags = models.ManyToManyField(
         Tag,
         verbose_name='tags',
-        related_name='recipe',
-        null=True)
+        related_name='recipe',)
     image = models.ImageField(
         'recipe photo',
         upload_to='static/recipe/',
@@ -43,6 +41,15 @@ class Recipe(models.Model):
     date_update = models.DateTimeField(
         'modifed date',
         auto_now=True)
+
+    def get_ingredients(self):
+        ingredients = [ingredient['name'] for ingredient in self.ingredients.values('name')]
+        return ingredients
+
+    def get_tags(self):
+        tags = [tag['name'] for tag in self.tags.values('name')]
+        return tags        
+
 
 
     class Meta:
@@ -107,7 +114,7 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
         related_name='shopping_cart',
         verbose_name='user')
-    recipe = models.ManyToManyField(
+    recipes = models.ManyToManyField(
         Recipe,
         related_name='shopping_cart',
         verbose_name='recipe')
@@ -117,6 +124,10 @@ class ShoppingCart(models.Model):
         verbose_name_plural = 'purchases'
         ordering = ['-id']
 
+    def get_recipe(self):
+        shopping_cart = [recipe['name'] for recipe in self.recipes.values('name')]
+        return shopping_cart
+
     def __str__(self):
-        shopping_cart = [recipe['name'] for recipe in self.recipe.values('name')]
+        shopping_cart = [recipe['name'] for recipe in self.recipes.values('name')]
         return f'{self.user} shopping cart: {shopping_cart}'

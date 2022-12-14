@@ -36,5 +36,7 @@ class SubscribeAdmin(admin.ModelAdmin):
         'subscribe_date',
         )
     search_fields = (
-        'user__email', 'author__email',)
+        'user__email',
+        'author__email',
+        )
     empty_value_display = '-empty-'

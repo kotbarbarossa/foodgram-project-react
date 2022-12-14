@@ -9,9 +9,9 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'name',
         'text',        
-        'ingredients',
+        'get_ingredients',
         'cooking_time',        
-        'tags',
+        'get_tags',
         'image',
         'pub_date',
         'date_update',
@@ -66,14 +66,14 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'recipe',       
+        'get_recipe',       
         )
     search_fields = (
         'user',
-        'recipe',
+        'recipes',
         )
     list_filter = (
         'user',
-        'recipe', 
+        'recipes', 
         )
     empty_value_display = '-empty-'

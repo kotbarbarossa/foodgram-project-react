@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import Recipe, FavoriteRecipe, ShoppingCart # , RecipeIngredient
+from .models import Recipe, FavoriteRecipe, ShoppingCart, RecipeIngredient
+
+
+class RecipeIngredientAdmin(admin.StackedInline):
+    model = RecipeIngredient
+    autocomplete_fields = ('ingredient',)
 
 
 @admin.register(Recipe)
@@ -16,6 +21,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'pub_date',
         'date_update',
         )
+    inlines = (RecipeIngredientAdmin,)
     search_fields = (
         'author',
         'name',

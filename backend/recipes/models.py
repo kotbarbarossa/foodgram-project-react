@@ -12,11 +12,13 @@ class Recipe(models.Model):
         through='RecipeIngredient',
         verbose_name='ingredients',
         related_name='recipe',
-#        on_delete=models.PROTECT,)
+#        on_delete=models.PROTECT,
+        )
     tags = models.ManyToManyField(
         Tag,
         verbose_name='tags',
-        related_name='recipe',)
+        related_name='recipe',
+        blank=True,)
     image = models.ImageField(
         'recipe photo',
         upload_to='static/recipe/',

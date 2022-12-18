@@ -66,10 +66,12 @@ class Recipe(models.Model):
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        on_delete=models.CASCADE,)
+        on_delete=models.CASCADE,
+        related_name='recipe')
     ingredient = models.ForeignKey(
         Ingredient,
-        on_delete=models.CASCADE,)
+        on_delete=models.CASCADE,
+        related_name='ingredient')
     amount = models.PositiveSmallIntegerField(
         'amount',)
 
@@ -84,30 +86,33 @@ class RecipeIngredient(models.Model):
 
 
 class FavoriteRecipe(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name='favorite_recipe',
         verbose_name='user',
     )
-    recipe = models.ForeignKey(
+    recipes = models.ManyToManyField(
         Recipe,
-        on_delete=models.CASCADE,
         related_name='favorite_recipe',
         verbose_name='recipe',
     )
     favorite_date = models.DateTimeField(
         'favorite date',
-        auto_now_add=True)    
+        auto_now_add=True)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'], name='unique_favorite')
-        ]
+    def get_recipe(self):
+        shopping_cart = [recipe['name'] for recipe in self.recipes.values('name')]
+        return shopping_cart
+
+    # class Meta:
+        # constraints = [
+        #     models.UniqueConstraint(
+        #         fields=['user', 'recipe'], name='unique_favorite')
+        # ]
 
     def __str__(self):
-        return f'{self.user} favorite {self.recipe}'
+        return f'{self.user} favorite {self.recipes}'
 
 
 class ShoppingCart(models.Model):

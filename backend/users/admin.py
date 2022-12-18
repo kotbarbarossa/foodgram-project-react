@@ -32,11 +32,11 @@ class SubscribeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'author',
+        'get_author',
         'subscribe_date',
         )
     search_fields = (
         'user__email',
-        'author__email',
+        'authors__email',
         )
     empty_value_display = '-empty-'

@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Recipe, FavoriteRecipe, ShoppingCart, RecipeIngredient
 
 
-class RecipeIngredientAdmin(admin.StackedInline):
+class RecipeIngredientAdmin(admin.TabularInline):
     model = RecipeIngredient
     autocomplete_fields = ('ingredient',)
 
@@ -13,8 +13,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'id',
         'author',
         'name',
-        'text',        
-        'get_ingredients',
+        'text',
         'cooking_time',        
         'get_tags',
         'image',
@@ -50,17 +49,17 @@ class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'recipe',
+        'get_recipe',
         'favorite_date',        
         )
     search_fields = (
         'user',
-        'recipe',
+        'recipes',
         'favorite_date',  
         )
     list_filter = (
         'user',
-        'recipe',
+        'recipes',
         'favorite_date',  
         )
     empty_value_display = '-empty-'

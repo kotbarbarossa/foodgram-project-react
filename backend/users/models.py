@@ -32,15 +32,14 @@ class User(AbstractUser):
 
 
 class Subscribe(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name='subscribe_user',
         verbose_name='follower',
     )
-    author = models.ForeignKey(
+    authors = models.ManyToManyField(
         User,
-        on_delete=models.CASCADE,
         related_name='subscribe_author',
         verbose_name='author',
     )
@@ -48,11 +47,15 @@ class Subscribe(models.Model):
         'subscribe date',
         auto_now_add=True)    
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'author'], name='unique_follow')
-        ]
+    def get_author(self):
+        shopping_cart = [author['email'] for author in self.authors.values('email')]
+        return shopping_cart
+
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['user', 'authors'], name='unique_follow')
+    #     ]
 
     def __str__(self):
-        return f'{self.user} subscibed to {self.author}'
+        return f'{self.user} subscibed to {self.authors}'

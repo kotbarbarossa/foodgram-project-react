@@ -9,7 +9,8 @@ class Tag(models.Model):
     color = models.CharField(
         'tag color',
         max_length=10,
-        unique=True)
+        unique=True
+        )
     slug = models.SlugField(
         'link',
         max_length=100,

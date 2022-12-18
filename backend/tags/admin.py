@@ -19,4 +19,5 @@ class TagAdmin(admin.ModelAdmin):
         'color',
         'slug',
         )
+    prepopulated_fields = {'slug': ('name',)}
     empty_value_display = '-empty-'

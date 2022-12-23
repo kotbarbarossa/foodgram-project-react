@@ -21,8 +21,8 @@ class UserAdmin(admin.ModelAdmin):
         'last_name',
         )
     list_filter = (
-        'email',
         'first_name',
+        'last_name',
         )
     empty_value_display = '-empty-'
 
@@ -32,11 +32,15 @@ class SubscribeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'get_author',
+        'author',
         'subscribe_date',
         )
     search_fields = (
         'user__email',
         'authors__email',
         )
+
+    @admin.display(description='author')
+    def author(self, obj):
+        return obj.get_author()
     empty_value_display = '-empty-'

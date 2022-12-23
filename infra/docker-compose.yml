@@ -30,15 +30,15 @@
 #     env_file:
 #       - ./.env
 
-#   # frontend:
-#     # image: kotbarbarossa/foodgram_frontend:latest
-#     # build:
-#     #   context: ../frontend
-#     #   dockerfile: Dockerfile
-#     # volumes:
-#     #   - ../frontend/:/app/result_build/
-#     # depends_on:
-#     #   - backend
+#   frontend:
+#     image: kotbarbarossa/foodgram_frontend:latest
+#     build:
+#       context: ../frontend
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ../frontend/:/app/result_build/
+#     depends_on:
+#       - backend
 
 #   nginx:
 #     image: nginx:1.19.3
@@ -55,41 +55,60 @@
 #       - backend   
 
 
-# ---------
+# # ---------
+
+# # version: '3.3'
+
+# # volumes:
+# #   static_value:
+# #   media_value:
+# #   postgres_data:
+
+# # services:
+# #   postgres:
+# #     image: postgres:13.0-alpine
+# #     volumes:
+# #       - postgres_data:/var/lib/postgresql/data/
+# #     env_file:
+# #       - ./.env
+# #   backend:
+# #     build:
+# #       context: ../backend
+# #       dockerfile: Dockerfile  
+# #     restart: always
+# #     volumes:
+# #       - static_value:/app/static/
+# #       - media_value:/app/media/
+# #     depends_on:
+# #       - postgres
+# #     env_file:
+# #       - ./.env
+# #   nginx:
+# #     image: nginx:1.21.3-alpine
+# #     ports:
+# #       - "80:80"
+# #     volumes:
+# #       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+# #       - static_value:/var/html/static/
+# #       - media_value:/var/html/media/
+# #     depends_on:
+# #       - backend
+
 
 version: '3.3'
-
-volumes:
-  static_value:
-  media_value:
-  postgres_data:
-
 services:
-  postgres:
-    image: postgres:13.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
-  backend:
+
+  frontend:
     build:
-      context: ../backend
-      dockerfile: Dockerfile  
-    restart: always
+      context: ../frontend
+      dockerfile: Dockerfile
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
-    depends_on:
-      - postgres
-    env_file:
-      - ./.env
+      - ../frontend/:/app/result_build/
   nginx:
-    image: nginx:1.21.3-alpine
+    image: nginx:1.19.3
     ports:
       - "80:80"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - static_value:/var/html/static/
-      - media_value:/var/html/media/
-    depends_on:
-      - backend
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/

@@ -22,19 +22,17 @@ class RecipeAdmin(admin.ModelAdmin):
         )
     inlines = (RecipeIngredientAdmin,)
     search_fields = (
-        'author',
+        'author__email',
         'name',
         'text',        
-        'ingredients',
+        'ingredients__name',
         'cooking_time',        
-        'tags',
+        'tags__name',
         'pub_date',
         'date_update',
         )
     list_filter = (
         'author',
-        'name',
-        'text',        
         'ingredients',
         'cooking_time',        
         'tags',
@@ -49,19 +47,24 @@ class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'get_recipe',
+        'recipe',
         'favorite_date',        
         )
     search_fields = (
-        'user',
-        'recipes',
+        'user__email',
+        'recipes__name',
         'favorite_date',  
         )
     list_filter = (
-        'user',
-        'recipes',
+        'user__email',
+        'recipes__name',        
         'favorite_date',  
         )
+    empty_value_display = '-empty-'
+
+    @admin.display(description='recipe')
+    def recipe(self, obj):
+        return obj.get_recipe()
     empty_value_display = '-empty-'
 
 
@@ -71,14 +74,19 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'get_recipe',       
+        'recipe',       
         )
     search_fields = (
-        'user',
-        'recipes',
+        'user__email',
+        'recipes__name',  
         )
     list_filter = (
-        'user',
-        'recipes', 
+        'user__email',
+        'recipes__name',  
         )
+    empty_value_display = '-empty-'
+
+    @admin.display(description='recipe')
+    def recipe(self, obj):
+        return obj.get_recipe()
     empty_value_display = '-empty-'

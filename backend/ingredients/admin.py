@@ -13,7 +13,6 @@ class IngredientAdmin(admin.ModelAdmin):
         'measurement_unit',
         )
     list_filter = (
-        'name',
         'measurement_unit',
         )
     empty_value_display = '-empty-'

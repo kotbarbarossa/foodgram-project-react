@@ -7,6 +7,7 @@ from ingredients.models import Ingredient
 User = get_user_model()
 
 class Recipe(models.Model):
+    """Recipe model."""
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
@@ -26,11 +27,12 @@ class Recipe(models.Model):
         null=True)
     name = models.CharField(
         'recipe name',
-        max_length=200)
+        max_length=200,
+        blank=False)
     text = models.TextField(
         'recipe description',
         blank=False)
-    cooking_time = models.BigIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         'cooking time')
     author = models.ForeignKey(
         User,
@@ -52,8 +54,6 @@ class Recipe(models.Model):
         tags = [tag['name'] for tag in self.tags.values('name')]
         return tags        
 
-
-
     class Meta:
         verbose_name = 'Recipe'
         verbose_name_plural = 'Recipes'
@@ -64,6 +64,7 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
+    """RecipeIngredient model."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -86,6 +87,7 @@ class RecipeIngredient(models.Model):
 
 
 class FavoriteRecipe(models.Model):
+    """FavoriteRecipe model."""    
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -102,8 +104,8 @@ class FavoriteRecipe(models.Model):
         auto_now_add=True)
 
     def get_recipe(self):
-        shopping_cart = [recipe['name'] for recipe in self.recipes.values('name')]
-        return shopping_cart
+        recipies_list = [recipe['name'] for recipe in self.recipes.values('name')]
+        return recipies_list
 
     # class Meta:
         # constraints = [
@@ -116,6 +118,7 @@ class FavoriteRecipe(models.Model):
 
 
 class ShoppingCart(models.Model):
+    """ShoppingCart model.""" 
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,

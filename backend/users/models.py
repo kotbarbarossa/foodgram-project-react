@@ -1,11 +1,9 @@
-
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-
 class User(AbstractUser):
+    """Custom user model."""
     email = models.EmailField(
         'email',
         max_length=200,
@@ -22,6 +20,12 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
+    # def get_is_subscribed(self, obj):
+    #     user = self.context['request'].user
+    #     if not user.is_authenticated:
+    #         return False
+    #     return user.follower.filter(author=obj).exists()
+
     class Meta:
         verbose_name = 'user'
         verbose_name_plural = 'users'
@@ -32,6 +36,7 @@ class User(AbstractUser):
 
 
 class Subscribe(models.Model):
+    """Subscribe model."""
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -48,8 +53,8 @@ class Subscribe(models.Model):
         auto_now_add=True)    
 
     def get_author(self):
-        shopping_cart = [author['email'] for author in self.authors.values('email')]
-        return shopping_cart
+        authors_list = [author['email'] for author in self.authors.values('email')]
+        return authors_list
 
     # class Meta:
     #     constraints = [

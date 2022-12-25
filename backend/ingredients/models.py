@@ -11,7 +11,6 @@ class Ingredient(models.Model):
         'measurement unit',
         max_length=200)
 
-
     class Meta:
         ordering = ['name']
         verbose_name = 'Ingredient'

@@ -16,15 +16,8 @@ class User(AbstractUser):
         max_length=150)
     text = models.TextField()
 
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-
-    # def get_is_subscribed(self, obj):
-    #     user = self.context['request'].user
-    #     if not user.is_authenticated:
-    #         return False
-    #     return user.follower.filter(author=obj).exists()
 
     class Meta:
         verbose_name = 'user'
@@ -40,20 +33,20 @@ class Subscribe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='follower' 
+        verbose_name='follower'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
         verbose_name='author',
-        null=True,      
+        null=True,
     )
     subscribe_date = models.DateTimeField(
         'subscribe date',
         auto_now_add=True,
         null=True,
-        )    
+        )
 
     class Meta:
         verbose_name = 'subscribe'
@@ -64,7 +57,10 @@ class Subscribe(models.Model):
                 name='unique_subscription')]
 
     def get_author(self):
-        authors_list = [single_author['email'] for single_author in self.author.values('email')]
+        authors_list = [
+            single_author[
+                'email'
+                ] for single_author in self.author.values('email')]
         return authors_list
 
     def __str__(self):

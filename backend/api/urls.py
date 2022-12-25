@@ -21,13 +21,19 @@ urlpatterns = [
         'users/<int:user_id>/subscribe/',
         AddAndDeleteSubscribe.as_view(),
         name='subscribe'),
-        path(
+    path(
         'users/subscriptions/',
         AddAndDeleteSubscribe.as_view(),
-        name='subscribe'),    
-    path('recipes/<int:recipe_id>/favorite/', AddDeleteFavoriteRecipe.as_view(), name='favorite_recipe'),
-    path('recipes/<int:recipe_id>/shopping_cart/', AddDeleteShoppingCart.as_view(), name='shopping_cart'),
+        name='subscribe'),
+    path(
+        'recipes/<int:recipe_id>/favorite/',
+        AddDeleteFavoriteRecipe.as_view(),
+        name='favorite_recipe'),
+    path(
+        'recipes/<int:recipe_id>/shopping_cart/',
+        AddDeleteShoppingCart.as_view(),
+        name='shopping_cart'),
     path('', include(router.urls)),
-    path('', include('djoser.urls')), 
+    path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 ]

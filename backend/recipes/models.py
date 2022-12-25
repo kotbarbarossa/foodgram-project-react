@@ -6,6 +6,7 @@ from ingredients.models import Ingredient
 
 User = get_user_model()
 
+
 class Recipe(models.Model):
     """Recipe model."""
     ingredients = models.ManyToManyField(
@@ -13,7 +14,7 @@ class Recipe(models.Model):
         through='RecipeIngredient',
         verbose_name='ingredients',
         related_name='recipe',
-#        on_delete=models.PROTECT,
+        # on_delete=models.PROTECT,
         )
     tags = models.ManyToManyField(
         Tag,
@@ -47,17 +48,20 @@ class Recipe(models.Model):
         auto_now=True)
 
     def get_ingredients(self):
-        ingredients = [ingredient['name'] for ingredient in self.ingredients.values('name')]
+        ingredients = [
+            ingredient[
+                'name'
+                ] for ingredient in self.ingredients.values('name')]
         return ingredients
 
     def get_tags(self):
         tags = [tag['name'] for tag in self.tags.values('name')]
-        return tags        
+        return tags
 
     class Meta:
         verbose_name = 'Recipe'
         verbose_name_plural = 'Recipes'
-        ordering = ('-pub_date', )        
+        ordering = ('-pub_date', )
 
     def __str__(self) -> str:
         return f'{self.name} from {self.author.first_name}'
@@ -87,7 +91,7 @@ class RecipeIngredient(models.Model):
 
 
 class FavoriteRecipe(models.Model):
-    """FavoriteRecipe model."""    
+    """FavoriteRecipe model."""
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -104,21 +108,19 @@ class FavoriteRecipe(models.Model):
         auto_now_add=True)
 
     def get_recipe(self):
-        recipies_list = [recipe['name'] for recipe in self.recipes.values('name')]
+        recipies_list = [
+            recipe[
+                'name'
+                ] for recipe in self.recipes.values('name')
+            ]
         return recipies_list
-
-    # class Meta:
-        # constraints = [
-        #     models.UniqueConstraint(
-        #         fields=['user', 'recipe'], name='unique_favorite')
-        # ]
 
     def __str__(self):
         return f'{self.user} favorite {self.recipes}'
 
 
 class ShoppingCart(models.Model):
-    """ShoppingCart model.""" 
+    """ShoppingCart model."""
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -135,9 +137,13 @@ class ShoppingCart(models.Model):
         ordering = ['-id']
 
     def get_recipe(self):
-        shopping_cart = [recipe['name'] for recipe in self.recipes.values('name')]
+        shopping_cart = [
+            recipe['name'] for recipe in self.recipes.values('name')
+            ]
         return shopping_cart
 
     def __str__(self):
-        shopping_cart = [recipe['name'] for recipe in self.recipes.values('name')]
+        shopping_cart = [
+            recipe['name'] for recipe in self.recipes.values('name')
+            ]
         return f'{self.user} shopping cart: {shopping_cart}'

@@ -13,8 +13,9 @@ class RecipeAdmin(admin.ModelAdmin):
         'id',
         'author',
         'name',
+        'get_favorite_count',
         'text',
-        'cooking_time',        
+        'cooking_time',
         'get_tags',
         'image',
         'pub_date',
@@ -24,9 +25,9 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = (
         'author__email',
         'name',
-        'text',        
+        'text',
         'ingredients__name',
-        'cooking_time',        
+        'cooking_time',
         'tags__name',
         'pub_date',
         'date_update',
@@ -34,12 +35,16 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = (
         'author',
         'ingredients',
-        'cooking_time',        
+        'cooking_time',
         'tags',
         'pub_date',
         'date_update',
         )
     empty_value_display = '-empty-'
+
+    @admin.display(description='In favorite')
+    def get_favorite_count(self, obj):
+        return obj.favorite_recipe.count()
 
 
 @admin.register(FavoriteRecipe)
@@ -48,17 +53,17 @@ class FavoriteRecipeAdmin(admin.ModelAdmin):
         'id',
         'user',
         'recipe',
-        'favorite_date',        
+        'favorite_date',
         )
     search_fields = (
         'user__email',
         'recipes__name',
-        'favorite_date',  
+        'favorite_date',
         )
     list_filter = (
         'user__email',
-        'recipes__name',        
-        'favorite_date',  
+        'recipes__name',
+        'favorite_date',
         )
     empty_value_display = '-empty-'
 
@@ -68,21 +73,20 @@ class FavoriteRecipeAdmin(admin.ModelAdmin):
     empty_value_display = '-empty-'
 
 
-
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'recipe',       
+        'recipe',
         )
     search_fields = (
         'user__email',
-        'recipes__name',  
+        'recipes__name',
         )
     list_filter = (
         'user__email',
-        'recipes__name',  
+        'recipes__name',
         )
     empty_value_display = '-empty-'
 

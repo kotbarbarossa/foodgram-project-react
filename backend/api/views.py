@@ -1,37 +1,33 @@
-from rest_framework import permissions, viewsets, status, filters, generics
+from rest_framework import viewsets, status, filters, generics
 from .serializers import UserSerializer
 from users.models import User
 from recipes.models import Recipe
 from ingredients.models import Ingredient
 from tags.models import Tag
 from .serializers import (
-    RecipeReadSerializer, 
-    IngredientSerializer, 
-    TagSerializer, RecipeWriteSerializer, RecipeSubscribeSerializer, 
+    RecipeReadSerializer,
+    IngredientSerializer,
+    TagSerializer,
+    RecipeWriteSerializer,
+    RecipeSubscribeSerializer,
     SubscribeSerializer,
     )
-from rest_framework.permissions import (SAFE_METHODS, AllowAny,
+from rest_framework.permissions import (
+                                        SAFE_METHODS,
                                         IsAuthenticated,
                                         IsAuthenticatedOrReadOnly,
                                         )
 from .permissions import IsAdminOrReadOnly
 from rest_framework.response import Response
-from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.response import Response
-
-# from django.contrib.auth import get_user_model
-
-
-# User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """User ViewSet."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class IngredientTagViewSet(viewsets.ModelViewSet):
@@ -41,17 +37,17 @@ class IngredientTagViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = ('name',)
     search_fields = ('^name',)
-    ordering_fields = ('name',) 
+    ordering_fields = ('name',)
 
 
 class IngredientViewSet(IngredientTagViewSet):
-    """Ingredient ViewSet."""    
+    """Ingredient ViewSet."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
 
 
 class TagViewSet(IngredientTagViewSet):
-    """Tag mixin ViewSet."""    
+    """Tag mixin ViewSet."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
@@ -59,7 +55,7 @@ class TagViewSet(IngredientTagViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Recipe ViewSet."""
     queryset = Recipe.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = ('name', 'ingredients', 'tags', 'author')
     search_fields = ('name',)
@@ -80,14 +76,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response({
                 'Recipe deleted successfully.'
             }, status=status.HTTP_204_NO_CONTENT)
-        except:
+        except Exception:
             return Response({
-                f'The wind blows from the void.'
+                'The wind blows from the void.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetObjectMixin(
-        generics.CreateAPIView, 
+        generics.CreateAPIView,
         generics.DestroyAPIView):
     """AddDeleteFavoriteRecipe and AddDeleteShoppingCart mixin ViewSet."""
 
@@ -114,7 +110,7 @@ class AddDeleteFavoriteRecipe(GetObjectMixin):
         instance = self.get_object()
         request.user.favorite_recipe.recipes.remove(instance)
         return Response({
-                f'Recipe removed from favorites.'
+                'Recipe removed from favorites.'
             }, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -131,7 +127,7 @@ class AddDeleteShoppingCart(GetObjectMixin):
         instance = self.get_object()
         request.user.shopping_cart.recipes.remove(instance)
         return Response({
-                f'Recipe removed from shoping cart.'
+                'Recipe removed from shoping cart.'
             }, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -144,7 +140,7 @@ class AddAndDeleteSubscribe(
     serializer_class = SubscribeSerializer
 
     def get_queryset(self):
-        return self.request.user.follower.all() 
+        return self.request.user.follower.all()
 
     def get_object(self):
         user_id = self.kwargs['user_id']

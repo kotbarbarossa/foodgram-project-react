@@ -37,7 +37,7 @@ class SubscribeAdmin(admin.ModelAdmin):
         )
     search_fields = (
         'user__email',
-        'authors__email',
+        'author__email',
         )
 
     @admin.display(description='author')

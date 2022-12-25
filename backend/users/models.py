@@ -36,31 +36,36 @@ class User(AbstractUser):
 
 
 class Subscribe(models.Model):
-    """Subscribe model."""
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='subscribe_user',
-        verbose_name='follower',
+        related_name='follower',
+        verbose_name='follower' 
     )
-    authors = models.ManyToManyField(
+    author = models.ForeignKey(
         User,
-        related_name='subscribe_author',
+        on_delete=models.CASCADE,
+        related_name='following',
         verbose_name='author',
+        null=True,      
     )
     subscribe_date = models.DateTimeField(
         'subscribe date',
-        auto_now_add=True)    
+        auto_now_add=True,
+        null=True,
+        )    
+
+    class Meta:
+        verbose_name = 'subscribe'
+        verbose_name_plural = 'subscriptions'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_subscription')]
 
     def get_author(self):
-        authors_list = [author['email'] for author in self.authors.values('email')]
+        authors_list = [single_author['email'] for single_author in self.author.values('email')]
         return authors_list
 
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['user', 'authors'], name='unique_follow')
-    #     ]
-
     def __str__(self):
-        return f'{self.user} subscibed to {self.authors}'
+        return f'{self.user} subscibed to {self.author}'

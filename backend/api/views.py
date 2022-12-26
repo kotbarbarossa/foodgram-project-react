@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, filters, generics
+from rest_framework import viewsets, status, generics
 from .serializers import UserSerializer
 from users.models import User
 from recipes.models import Recipe, RecipeIngredient
@@ -24,6 +24,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum
 from django.http.response import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
+from .filters import IngredientFilter, RecipeFilter
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,7 +38,7 @@ class IngredientTagViewSet(viewsets.ModelViewSet):
     """Ingredient and Tag mixin ViewSet."""
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (IngredientFilter, )
     filterset_fields = ('name',)
     search_fields = ('name',)
     ordering_fields = ('name',)
@@ -59,10 +60,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Recipe ViewSet."""
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    filterset_fields = ('name', 'ingredients', 'tags', 'author')
-    search_fields = ('name',)
-    ordering_fields = ('name',)
+    filter_backends = (DjangoFilterBackend, )
+    filter_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

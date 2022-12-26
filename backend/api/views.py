@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, filters, generics
 from .serializers import UserSerializer
 from users.models import User
-from recipes.models import Recipe
+from recipes.models import Recipe, RecipeIngredient
 from ingredients.models import Ingredient
 from tags.models import Tag
 from .serializers import (
@@ -21,6 +21,9 @@ from .permissions import IsAdminOrReadOnly
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Sum
+from django.http.response import HttpResponse
+from rest_framework.decorators import api_view, permission_classes
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -34,9 +37,9 @@ class IngredientTagViewSet(viewsets.ModelViewSet):
     """Ingredient and Tag mixin ViewSet."""
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ('name',)
-    search_fields = ('^name',)
+    search_fields = ('name',)
     ordering_fields = ('name',)
 
 
@@ -164,3 +167,27 @@ class AddAndDeleteSubscribe(
 
     def perform_destroy(self, instance):
         self.request.user.follower.filter(author=instance).delete()
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def DownloadShoppingCart(request):
+
+    ingredients = RecipeIngredient.objects.filter(
+        recipe__shopping_cart__user=request.user
+    ).order_by('ingredient__name').values(
+        'ingredient__name', 'ingredient__measurement_unit'
+    ).annotate(amount=Sum('amount'))
+
+    shopping_list = ('Ingredients needed to prepare all meals:')
+    name = 'ingredient__name'
+    unit = 'ingredient__measurement_unit'
+    amount = 'amount'
+
+    for count, _ in enumerate(ingredients, start=1):
+        shopping_list += (
+            f'\n{count}) {_[name]} - {_[amount]} {_[unit]}')
+    file = 'shopping_list.txt'
+    response = HttpResponse(shopping_list, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
+    return response

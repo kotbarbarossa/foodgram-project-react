@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.html import format_html
 from django.contrib import admin
+from django.core.validators import RegexValidator
 
 
 class Tag(models.Model):
@@ -22,10 +23,21 @@ class Tag(models.Model):
     name = models.CharField(
         'tag name',
         max_length=60,
+        validators=[RegexValidator(
+            r'^[a-zа-яё\s]+$',
+            message='The tag name can only contain letters and spaces'
+            )],
         unique=True)
     color = models.CharField(
         'HEX tag color',
         max_length=7,
+        validators=[RegexValidator(
+            r'#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{6})$',
+            message=(
+                'A hex triplet is a six-digit, '
+                'three-byte hexadecimal number. '
+                'EXAMPLE --> #FF0000')
+            )],
         unique=True)
     slug = models.SlugField(
         'link',

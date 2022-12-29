@@ -7,7 +7,6 @@ from random import randrange
 load_dotenv()
 
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
 def wake_up(update, context):
@@ -48,18 +47,20 @@ def say_no(update, context):
         raise AssertionError(f'{error} Ошибка отправки ответа в телеграм')
 
 
-def send_message(message):
-    """Отправка сообщения в чат."""
-    try:
-        bot = telegram.Bot(token=TELEGRAM_TOKEN)
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-    except Exception as error:
-        raise AssertionError(f'{error} Ошибка отправки в телеграм')
-
-
-def main():
+def main(chat_id):
     """Основная логика работы бота."""
     UPADTER = Updater(token=TELEGRAM_TOKEN)
     UPADTER.dispatcher.add_handler(CommandHandler('start', wake_up))
     UPADTER.dispatcher.add_handler(MessageHandler(Filters.text, say_no))
     UPADTER.start_polling()
+
+
+def send_message(chat_id, message):
+    """Отправка сообщения в чат."""
+    try:
+        bot = telegram.Bot(token=TELEGRAM_TOKEN)
+        bot.send_message(chat_id=chat_id, text=message)
+    except Exception as error:
+        raise AssertionError(f'{error} Ошибка отправки в телеграм')
+
+    main(chat_id)

@@ -169,9 +169,17 @@ class AddAndDeleteSubscribe(
         self.request.user.follower.filter(author=instance).delete()
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated, ))
 def DownloadShoppingCart(request):
+    """
+    Схема работы для метода пост запроса:
+    Пользователь передает свой чат айди
+    {
+        "chat_id": "123456789"
+    }
+    Бот отправляет ему список покупок.
+    """
 
     ingredients = RecipeIngredient.objects.filter(
         recipe__shopping_cart__user=request.user
@@ -201,4 +209,8 @@ def DownloadShoppingCart(request):
     file = 'shopping_list.txt'
     response = HttpResponse(shopping_list, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
-    return response
+    if request.method == 'GET':
+        return response
+    else:
+        chat_id = request.data.get('chat_id')
+        send_message(chat_id, shopping_list)

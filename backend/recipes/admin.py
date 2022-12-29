@@ -46,6 +46,10 @@ class RecipeAdmin(admin.ModelAdmin):
     def get_favorite_count(self, obj):
         return obj.favorite_recipe.count()
 
+    @admin.display(description='Recipe tags')
+    def get_tags(self, obj):
+        return obj.get_tags()
+
 
 @admin.register(FavoriteRecipe)
 class FavoriteRecipeAdmin(admin.ModelAdmin):

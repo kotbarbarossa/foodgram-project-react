@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, generics
 from .serializers import UserSerializer
 from users.models import User
-from recipes.models import Recipe, RecipeIngredient
+from recipes.models import Recipe, RecipeIngredient, FavoriteRecipe
 from ingredients.models import Ingredient
 from tags.models import Tag
 from .serializers import (
@@ -25,6 +25,7 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from .filters import IngredientFilter, RecipeFilter
+from .telegram_bot import send_message
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -150,19 +151,19 @@ class AddAndDeleteSubscribe(
         self.check_object_permissions(self.request, user)
         return user
 
-    def create(self, request, *args, **kwargs):
+    def get_id(self):
+        id = self.kwargs['user_id']
+        return id
+
+    def perform_create(self, serializer):
         instance = self.get_object()
-        if request.user.id == instance.id:
-            return Response(
-                {'errors': "You can't subscribe to yourself."},
-                status=status.HTTP_400_BAD_REQUEST)
-        if request.user.follower.filter(author=instance).exists():
-            return Response(
-                {'errors': 'You are already subscribed to this author.'},
-                status=status.HTTP_400_BAD_REQUEST)
-        subs = request.user.follower.create(author=instance)
-        serializer = self.get_serializer(subs)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        id = self.get_id()
+        serializer.is_valid(raise_exception=True)
+        serializer.save(
+            user=self.request.user,
+            author=instance,
+            id=id
+        )
 
     def perform_destroy(self, instance):
         self.request.user.follower.filter(author=instance).delete()
@@ -178,14 +179,25 @@ def DownloadShoppingCart(request):
         'ingredient__name', 'ingredient__measurement_unit'
     ).annotate(amount=Sum('amount'))
 
-    shopping_list = ('Ingredients needed to prepare all meals:')
-    name = 'ingredient__name'
+    recipes_list = FavoriteRecipe.objects.filter(
+        user=request.user
+    ).values(
+        'recipes__name'
+    )
+    shopping_list = ('To prepare the following dishes:')
+    recipe_name = 'recipes__name'
+    ingredient_name = 'ingredient__name'
     unit = 'ingredient__measurement_unit'
     amount = 'amount'
 
+    for recipe in recipes_list:
+        shopping_list += (f'\n - {recipe[recipe_name]}')
+
+    shopping_list += ('\nYou need to buy a total of ingredients:')
+
     for count, _ in enumerate(ingredients, start=1):
         shopping_list += (
-            f'\n{count}) {_[name]} - {_[amount]} {_[unit]}')
+            f'\n{count}) {_[ingredient_name]} - {_[amount]} {_[unit]}')
     file = 'shopping_list.txt'
     response = HttpResponse(shopping_list, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="{file}.txt"'

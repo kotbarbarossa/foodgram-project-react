@@ -55,7 +55,7 @@ class Recipe(models.Model):
         return ingredients
 
     def get_tags(self):
-        tags = [tag['name'] for tag in self.tags.values('name')]
+        tags = [tag.get('name') for tag in self.tags.values('name')]
         return tags
 
     class Meta:

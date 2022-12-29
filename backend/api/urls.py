@@ -12,31 +12,33 @@ from .views import (
 
 app_name = 'api'
 
+users_special_patterns = [
+    path(
+        '<int:user_id>/subscribe/',
+        AddAndDeleteSubscribe.as_view(), name='subscribe'),
+    path(
+        'subscriptions/',
+        AddAndDeleteSubscribe.as_view(), name='subscribe'),
+]
+
+recipes_special_patterns = [
+    path(
+        '<int:recipe_id>/favorite/',
+        AddDeleteFavoriteRecipe.as_view(), name='favorite_recipe'),
+    path(
+        '<int:recipe_id>/shopping_cart/',
+        AddDeleteShoppingCart.as_view(), name='shopping_cart'),
+    path('download_shopping_cart/', DownloadShoppingCart),
+]
+
 router = routers.DefaultRouter()
 router.register(r'recipes', RecipeViewSet, basename='recipes')
 router.register(r'ingredients', IngredientViewSet, basename='ingredients')
 router.register(r'tags', TagViewSet, basename='tags')
 
 urlpatterns = [
-    path(
-        'users/<int:user_id>/subscribe/',
-        AddAndDeleteSubscribe.as_view(),
-        name='subscribe'),
-    path(
-        'users/subscriptions/',
-        AddAndDeleteSubscribe.as_view(),
-        name='subscribe'),
-    path(
-        'recipes/<int:recipe_id>/favorite/',
-        AddDeleteFavoriteRecipe.as_view(),
-        name='favorite_recipe'),
-    path(
-        'recipes/<int:recipe_id>/shopping_cart/',
-        AddDeleteShoppingCart.as_view(),
-        name='shopping_cart'),
-    path(
-        'recipes/download_shopping_cart/',
-        DownloadShoppingCart),
+    path('users/', include(users_special_patterns)),
+    path('recipes/', include(recipes_special_patterns)),
     path('', include(router.urls)),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),

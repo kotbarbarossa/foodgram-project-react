@@ -56,13 +56,14 @@ jobs:
           context: bakcend/
           push: true
           tags: kotbarbarossa/foodgram-project-react-backend:latest
-          # file: backend/Dockerfile
+          file: backend/Dockerfile
       - name: Push frontend to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: frontend/
           push: true
-          tags: kotbarbarossa/foodgram-project-react-frontend:latest         
+          tags: kotbarbarossa/foodgram-project-react-frontend:latest        
+          file: frontend/Dockerfile 
 
   send_message_push_to_docker_hub:
     runs-on: ubuntu-latest

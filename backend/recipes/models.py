@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from tags.models import Tag
 from ingredients.models import Ingredient
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 User = get_user_model()
@@ -14,7 +16,6 @@ class Recipe(models.Model):
         through='RecipeIngredient',
         verbose_name='ingredients',
         related_name='recipe',
-        # on_delete=models.PROTECT,
         )
     tags = models.ManyToManyField(
         Tag,
@@ -115,6 +116,12 @@ class FavoriteRecipe(models.Model):
             ]
         return recipies_list
 
+    @receiver(post_save, sender=User)
+    def create_favorite_recipe(
+            sender, instance, created, **kwargs):
+        if created:
+            return FavoriteRecipe.objects.create(user=instance)
+
     def __str__(self):
         return f'{self.user} favorite {self.recipes}'
 
@@ -131,16 +138,22 @@ class ShoppingCart(models.Model):
         related_name='shopping_cart',
         verbose_name='recipe')
 
-    class Meta:
-        verbose_name = 'purchase'
-        verbose_name_plural = 'purchases'
-        ordering = ['-id']
-
     def get_recipe(self):
         shopping_cart = [
             recipe['name'] for recipe in self.recipes.values('name')
             ]
         return shopping_cart
+
+    @receiver(post_save, sender=User)
+    def create_shopping_cart(
+            sender, instance, created, **kwargs):
+        if created:
+            return ShoppingCart.objects.create(user=instance)
+
+    class Meta:
+        verbose_name = 'purchase'
+        verbose_name_plural = 'purchases'
+        ordering = ['-id']
 
     def __str__(self):
         shopping_cart = [

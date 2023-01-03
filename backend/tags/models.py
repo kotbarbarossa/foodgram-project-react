@@ -24,7 +24,7 @@ class Tag(models.Model):
         'tag name',
         max_length=60,
         validators=[RegexValidator(
-            r'^[a-zа-яё\s]+$',
+            r'^[A-Za-zА-Яа-яЁё\s]+$',
             message='The tag name can only contain letters and spaces'
             )],
         unique=True)

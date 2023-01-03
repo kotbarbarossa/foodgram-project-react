@@ -216,7 +216,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         if 'ingredients' in validated_data:
             ingredients = validated_data.pop('ingredients')
             instance.ingredients.clear()
-            self.create_ingredients(ingredients, instance)
+            self.__create_ingredients(ingredients, instance)
         if 'tags' in validated_data:
             instance.tags.set(
                 validated_data.pop('tags'))
@@ -261,8 +261,8 @@ class RecipeSubscribeSerializer(serializers.ModelSerializer):
 
 class SubscribeSerializer(serializers.ModelSerializer):
     """Author Subscribe Serializer."""
-    id = serializers.IntegerField(read_only=False)
     email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.IntegerField(source='author.id', required=False)
     username = serializers.ReadOnlyField(source='author.username')
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
@@ -292,7 +292,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = self.context.get('request').user
-        author = get_object_or_404(User, pk=data.get('id'))
+        author_id = self.context.get(
+            'request').parser_context.get('kwargs').get('user_id')
+        print(author_id)
+        author = get_object_or_404(User, pk=author_id)
         if user == author:
             raise serializers.ValidationError(
                 'You cannot subscribe to yourself.')
@@ -303,7 +306,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscribe
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed',
                   'recipes',
                   'recipes_count')

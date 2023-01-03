@@ -1,7 +1,6 @@
 FROM python:3.7
 WORKDIR /backend
-COPY requirements.txt .
-RUN apt-get update && apt-get upgrade -y && \
-    pip install --upgrade pip && pip install -r requirements.txt
-COPY . .
+COPY backend/requirements.txt .
+RUN pip3 install -r ./requirements.txt --no-cache-dir
+COPY backend/ .
 CMD ["gunicorn", "foodgram.wsgi:application", "--bind", "0:8000" ]

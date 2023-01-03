@@ -1,8 +1,9 @@
 import os
-from dotenv import load_dotenv
-import telegram
-from telegram.ext import Updater, Filters, MessageHandler, CommandHandler
 from random import randrange
+
+import telegram
+from dotenv import load_dotenv
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
 load_dotenv()
 
@@ -49,10 +50,10 @@ def say_no(update, context):
 
 def main(chat_id):
     """Основная логика работы бота."""
-    UPADTER = Updater(token=TELEGRAM_TOKEN)
-    UPADTER.dispatcher.add_handler(CommandHandler('start', wake_up))
-    UPADTER.dispatcher.add_handler(MessageHandler(Filters.text, say_no))
-    UPADTER.start_polling()
+    updater = Updater(token=TELEGRAM_TOKEN)
+    updater.dispatcher.add_handler(CommandHandler('start', wake_up))
+    updater.dispatcher.add_handler(MessageHandler(Filters.text, say_no))
+    updater.start_polling()
 
 
 def send_message(chat_id, message):

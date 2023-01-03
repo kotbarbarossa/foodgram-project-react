@@ -1,7 +1,7 @@
-from django.db import models
-from django.utils.html import format_html
 from django.contrib import admin
 from django.core.validators import RegexValidator
+from django.db import models
+from django.utils.html import format_html
 
 
 class Tag(models.Model):

@@ -57,11 +57,13 @@ class Subscribe(models.Model):
                 name='unique_subscription')]
 
     def get_author(self):
-        authors_list = [
-            single_author[
-                'email'
-                ] for single_author in self.author.values('email')]
-        return authors_list
+        # authors_list = [
+        #     single_author[
+        #         'email'
+        #         ] for single_author in self.author.values('email')]
+        return [single_author[
+            'email'
+            ] for single_author in self.author.values('email')]
 
     def __str__(self):
         return f'{self.user} subscibed to {self.author}'

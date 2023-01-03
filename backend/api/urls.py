@@ -1,14 +1,9 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import (
-    RecipeViewSet,
-    IngredientViewSet,
-    TagViewSet,
-    AddDeleteFavoriteRecipe,
-    AddDeleteShoppingCart,
-    AddAndDeleteSubscribe,
-    DownloadShoppingCart,
-)
+
+from .views import (AddAndDeleteSubscribe, AddDeleteFavoriteRecipe,
+                    AddDeleteShoppingCart, IngredientViewSet, RecipeViewSet,
+                    TagViewSet, download_shopping_cart)
 
 app_name = 'api'
 
@@ -28,7 +23,7 @@ recipes_special_patterns = [
     path(
         '<int:recipe_id>/shopping_cart/',
         AddDeleteShoppingCart.as_view(), name='shopping_cart'),
-    path('download_shopping_cart/', DownloadShoppingCart),
+    path('download_shopping_cart/', download_shopping_cart),
 ]
 
 router = routers.DefaultRouter()

@@ -1,10 +1,9 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from tags.models import Tag
-from ingredients.models import Ingredient
-from django.dispatch import receiver
+from django.db import models
 from django.db.models.signals import post_save
-
+from django.dispatch import receiver
+from ingredients.models import Ingredient
+from tags.models import Tag
 
 User = get_user_model()
 
@@ -49,15 +48,18 @@ class Recipe(models.Model):
         auto_now=True)
 
     def get_ingredients(self):
-        ingredients = [
+        # ingredients = [
+        #     ingredient[
+        #         'name'
+        #         ] for ingredient in self.ingredients.values('name')]
+        return [
             ingredient[
                 'name'
                 ] for ingredient in self.ingredients.values('name')]
-        return ingredients
 
     def get_tags(self):
-        tags = [tag.get('name') for tag in self.tags.values('name')]
-        return tags
+        # tags = [tag.get('name') for tag in self.tags.values('name')]
+        return [tag.get('name') for tag in self.tags.values('name')]
 
     class Meta:
         verbose_name = 'Recipe'
@@ -109,18 +111,22 @@ class FavoriteRecipe(models.Model):
         auto_now_add=True)
 
     def get_recipe(self):
-        recipies_list = [
+        # recipies_list = [
+        #     recipe[
+        #         'name'
+        #         ] for recipe in self.recipes.values('name')
+        #     ]
+        return [
             recipe[
                 'name'
                 ] for recipe in self.recipes.values('name')
             ]
-        return recipies_list
 
     @receiver(post_save, sender=User)
-    def create_favorite_recipe(
-            sender, instance, created, **kwargs):
+    def create_favorite_recipe(self, sender, instance, created, **kwargs):
         if created:
             return FavoriteRecipe.objects.create(user=instance)
+        return None
 
     def __str__(self):
         return f'{self.user} favorite {self.recipes}'
@@ -139,16 +145,18 @@ class ShoppingCart(models.Model):
         verbose_name='recipe')
 
     def get_recipe(self):
-        shopping_cart = [
+        # shopping_cart = [
+        #     recipe['name'] for recipe in self.recipes.values('name')
+        #     ]
+        return [
             recipe['name'] for recipe in self.recipes.values('name')
             ]
-        return shopping_cart
 
     @receiver(post_save, sender=User)
-    def create_shopping_cart(
-            sender, instance, created, **kwargs):
+    def create_shopping_cart(self, sender, instance, created, **kwargs):
         if created:
             return ShoppingCart.objects.create(user=instance)
+        return None
 
     class Meta:
         verbose_name = 'purchase'

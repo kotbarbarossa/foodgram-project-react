@@ -1,16 +1,12 @@
-from djoser.serializers import UserSerializer, serializers
-from users.models import User, Subscribe
-from recipes.models import (
-    Recipe,
-    RecipeIngredient,
-    FavoriteRecipe,
-    ShoppingCart,
-    )
-from ingredients.models import Ingredient
-from tags.models import Tag
-from drf_base64.fields import Base64ImageField
-from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.shortcuts import get_object_or_404
+from djoser.serializers import UserSerializer, serializers
+from drf_base64.fields import Base64ImageField
+from ingredients.models import Ingredient
+from recipes.models import (FavoriteRecipe, Recipe, RecipeIngredient,
+                            ShoppingCart)
+from tags.models import Tag
+from users.models import Subscribe, User
 
 
 class UserSerializer(UserSerializer):

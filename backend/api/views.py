@@ -1,30 +1,22 @@
-from rest_framework import viewsets, status, generics
-from .serializers import UserSerializer
-from users.models import User
-from recipes.models import Recipe, RecipeIngredient, FavoriteRecipe
-from ingredients.models import Ingredient
-from tags.models import Tag
-from .serializers import (
-    RecipeReadSerializer,
-    IngredientSerializer,
-    TagSerializer,
-    RecipeWriteSerializer,
-    RecipeSubscribeSerializer,
-    SubscribeSerializer,
-    )
-from rest_framework.permissions import (
-                                        SAFE_METHODS,
-                                        IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly,
-                                        )
-from .permissions import IsAdminOrReadOnly
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum
 from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from ingredients.models import Ingredient
+from recipes.models import FavoriteRecipe, Recipe, RecipeIngredient
+from rest_framework import generics, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from tags.models import Tag
+from users.models import User
+
 from .filters import IngredientFilter, RecipeFilter
+from .permissions import IsAdminOrReadOnly
+from .serializers import (IngredientSerializer, RecipeReadSerializer,
+                          RecipeSubscribeSerializer, RecipeWriteSerializer,
+                          SubscribeSerializer, TagSerializer, UserSerializer)
 from .telegram_bot import send_message
 
 
@@ -112,9 +104,9 @@ class AddDeleteFavoriteRecipe(GetObjectMixin):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         request.user.favorite_recipe.recipes.remove(instance)
-        return Response({
-                'Recipe removed from favorites.'
-            }, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'Recipe removed from favorites.'},
+            status=status.HTTP_204_NO_CONTENT)
 
 
 class AddDeleteShoppingCart(GetObjectMixin):
@@ -129,9 +121,9 @@ class AddDeleteShoppingCart(GetObjectMixin):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         request.user.shopping_cart.recipes.remove(instance)
-        return Response({
-                'Recipe removed from shoping cart.'
-            }, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'Recipe removed from shoping cart.'},
+            status=status.HTTP_204_NO_CONTENT)
 
 
 class AddAndDeleteSubscribe(
@@ -152,8 +144,8 @@ class AddAndDeleteSubscribe(
         return user
 
     def get_id(self):
-        id = self.kwargs['user_id']
-        return id
+        # id = self.kwargs['user_id']
+        return self.kwargs['user_id']
 
     def perform_create(self, serializer):
         instance = self.get_object()
@@ -171,7 +163,7 @@ class AddAndDeleteSubscribe(
 
 @api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated, ))
-def DownloadShoppingCart(request):
+def download_shopping_cart(request):
     """
     Схема работы для метода пост запроса:
     Пользователь передает свой чат айди
@@ -211,6 +203,5 @@ def DownloadShoppingCart(request):
     response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
     if request.method == 'GET':
         return response
-    else:
-        chat_id = request.data.get('chat_id')
-        send_message(chat_id, shopping_list)
+    chat_id = request.data.get('chat_id')
+    return send_message(chat_id, shopping_list)

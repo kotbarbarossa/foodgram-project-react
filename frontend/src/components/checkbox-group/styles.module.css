@@ -11,6 +11,6 @@
 
 .checkboxGroupItems {
   flex-basis: 370px;
-  display: flex;
+  display: block; /* display: flex; */
 }
 

@@ -3,7 +3,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from ingredients.models import Ingredient
-from recipes.models import FavoriteRecipe, Recipe, RecipeIngredient
+from recipes.models import ShoppingCart, Recipe, RecipeIngredient
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
@@ -144,7 +144,6 @@ class AddAndDeleteSubscribe(
         return user
 
     def get_id(self):
-        # id = self.kwargs['user_id']
         return self.kwargs['user_id']
 
     def perform_create(self, serializer):
@@ -179,12 +178,12 @@ def download_shopping_cart(request):
         'ingredient__name', 'ingredient__measurement_unit'
     ).annotate(amount=Sum('amount'))
 
-    recipes_list = FavoriteRecipe.objects.filter(
+    recipes_list = ShoppingCart.objects.filter(
         user=request.user
     ).values(
         'recipes__name'
     )
-    shopping_list = ('To prepare the following dishes:')
+    shopping_list = ('Для приготовления следующих блюд:')
     recipe_name = 'recipes__name'
     ingredient_name = 'ingredient__name'
     unit = 'ingredient__measurement_unit'
@@ -193,7 +192,7 @@ def download_shopping_cart(request):
     for recipe in recipes_list:
         shopping_list += (f'\n - {recipe[recipe_name]}')
 
-    shopping_list += ('\nYou need to buy a total of ingredients:')
+    shopping_list += ('\nВ общей сложности необходимо преобрести:')
 
     for count, _ in enumerate(ingredients, start=1):
         shopping_list += (

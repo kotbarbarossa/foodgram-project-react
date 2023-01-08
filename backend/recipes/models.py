@@ -48,17 +48,12 @@ class Recipe(models.Model):
         auto_now=True)
 
     def get_ingredients(self):
-        # ingredients = [
-        #     ingredient[
-        #         'name'
-        #         ] for ingredient in self.ingredients.values('name')]
         return [
             ingredient[
                 'name'
                 ] for ingredient in self.ingredients.values('name')]
 
     def get_tags(self):
-        # tags = [tag.get('name') for tag in self.tags.values('name')]
         return [tag.get('name') for tag in self.tags.values('name')]
 
     class Meta:
@@ -111,11 +106,6 @@ class FavoriteRecipe(models.Model):
         auto_now_add=True)
 
     def get_recipe(self):
-        # recipies_list = [
-        #     recipe[
-        #         'name'
-        #         ] for recipe in self.recipes.values('name')
-        #     ]
         return [
             recipe[
                 'name'
@@ -146,9 +136,6 @@ class ShoppingCart(models.Model):
         verbose_name='recipe')
 
     def get_recipe(self):
-        # shopping_cart = [
-        #     recipe['name'] for recipe in self.recipes.values('name')
-        #     ]
         return [
             recipe['name'] for recipe in self.recipes.values('name')
             ]

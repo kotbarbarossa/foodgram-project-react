@@ -2,14 +2,13 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from ingredients.models import Ingredient
+from recipes.models import Recipe, RecipeIngredient, ShoppingCart
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-
-from ingredients.models import Ingredient
-from recipes.models import Recipe, RecipeIngredient, ShoppingCart
 from tags.models import Tag
 from users.models import User
 

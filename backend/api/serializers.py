@@ -2,7 +2,6 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserSerializer, serializers
 from drf_base64.fields import Base64ImageField
-
 from ingredients.models import Ingredient
 from recipes.models import (FavoriteRecipe, Recipe, RecipeIngredient,
                             ShoppingCart)

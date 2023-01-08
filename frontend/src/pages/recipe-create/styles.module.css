@@ -106,6 +106,7 @@
 
   .checkboxGroup {
     display: block;
+    text-align: left;    
   }
 
   .checkboxGroupLabel {
